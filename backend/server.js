@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const db = require('./config/db');
@@ -38,7 +40,28 @@ app.use('/api/products', productRoutes);
 app.use('/api/stock', stockRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Fallback 404 handler
+// Serve static frontend build if available
+const publicDir = path.join(__dirname, 'public');
+const frontendBuildDir = path.join(__dirname, '../frontend/build');
+
+let staticDir = null;
+if (fs.existsSync(publicDir)) {
+  staticDir = publicDir;
+} else if (fs.existsSync(frontendBuildDir)) {
+  staticDir = frontendBuildDir;
+}
+
+if (staticDir) {
+  app.use(express.static(staticDir));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(staticDir, 'index.html'));
+  });
+}
+
+// Fallback 404 handler for API routes
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Resource not found' });
 });

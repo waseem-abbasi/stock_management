@@ -1,16 +1,17 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+const isNeon = process.env.DATABASE_URL && process.env.DATABASE_URL.includes('neon.tech');
+
 const pool = new Pool({
-   connectionString: process.env.DATABASE_URL,
-  // host: process.env.DB_HOST || 'localhost',
-  // port: parseInt(process.env.DB_PORT, 10) || 5432,
-  // user: process.env.DB_USER || 'postgres',
-  // password: process.env.DB_PASSWORD || 'postgres',
-  // database: process.env.DB_NAME || 'stock_management',
+  connectionString: process.env.DATABASE_URL,
+  ssl: (isNeon || isProduction || process.env.DB_SSL === 'true')
+    ? { rejectUnauthorized: false }
+    : undefined,
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,
 });
 
 pool.on('error', (err) => {
