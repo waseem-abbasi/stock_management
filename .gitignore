@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Local environment files and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Generated build output and caches
+frontend/build/
+coverage/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database dumps
+/stock_dump.sql
+/stock_management.sql
+/stock.sql
+
+# Local editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
